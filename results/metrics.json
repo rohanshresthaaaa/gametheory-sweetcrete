@@ -1,0 +1,14 @@
+{
+  "winner": "RandomForest",
+  "test_r2": 0.9658,
+  "test_rmse": 2.4514,
+  "test_mae": 1.5383,
+  "features": [
+    "Age_days",
+    "Cement_lbs",
+    "PCC_Fraction",
+    "WaterCement_Ratio",
+    "CoarseAgg_lbs"
+  ],
+  "target": "Strength_MPa"
+}
