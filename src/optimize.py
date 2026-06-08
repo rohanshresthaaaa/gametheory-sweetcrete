@@ -38,15 +38,21 @@ def _load():
     return _MODEL, _RECIPE
 
 
+def feature_row(pcc_level: float, age_days: float) -> pd.DataFrame:
+    """Build the 5-feature model input for a tested PCC level at a given age,
+    using the representative recipe measured at that level."""
+    _, recipe = _load()
+    r = recipe.iloc[(recipe["PCC_%"] - pcc_level).abs().argmin()]
+    return pd.DataFrame([{"Age_days": age_days, "Cement_lbs": r["Cement_lbs"],
+                          "PCC_Fraction": r["PCC_Fraction"],
+                          "WaterCement_Ratio": r["WaterCement_Ratio"],
+                          "CoarseAgg_lbs": r["CoarseAgg_lbs"]}])[SELECTED_FEATURES]
+
+
 def predict_strength(pcc_level: float, age_days: float) -> float:
     """Predicted compressive strength (MPa) for a tested PCC level at a given age."""
-    model, recipe = _load()
-    r = recipe.iloc[(recipe["PCC_%"] - pcc_level).abs().argmin()]
-    x = pd.DataFrame([{"Age_days": age_days, "Cement_lbs": r["Cement_lbs"],
-                       "PCC_Fraction": r["PCC_Fraction"],
-                       "WaterCement_Ratio": r["WaterCement_Ratio"],
-                       "CoarseAgg_lbs": r["CoarseAgg_lbs"]}])[SELECTED_FEATURES]
-    return float(model.predict(x)[0])
+    model, _ = _load()
+    return float(model.predict(feature_row(pcc_level, age_days))[0])
 
 
 def strength_curve(age_days: float = 28) -> pd.DataFrame:
